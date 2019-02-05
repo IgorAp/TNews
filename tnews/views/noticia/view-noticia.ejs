@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>Tnews | <%=noticia.titulo%></title>
+</head>
+<body>
+    <%-include ../header%>
+    <div class="container shadow-sm p-3 mb-5 bg-light rounded">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="text-center" style="padding-top: 3em"><%=noticia.titulo%></h1>
+                <%if(noticia.denunciada == 1){%>
+                    <div class="alert alert-danger text-center" role="alert">
+                        Essa notícia não está de acordo com os <a href="#">termos</a> da comunidade.
+                    </div>
+                <%}%>
+                <p><strong>Data do ocorrido: </strong><%=noticia.data%></p>
+                <%-noticia.corpo%>
+            </div>
+        </div>
+        <div class="shadow-sm p-3 mb-5 bg-white rounded">
+            <h3 class="text-center">Informações Adicionais</h3>
+            <br>
+            <div class="row text-center">
+                <p class="col-md-3">Estado: <strong><%=noticia.estado%></strong></p>
+                <p class="col-md-3">Estado: <strong><%=noticia.cidade%></strong></p>
+                <p class="col-md-3">Categoria: <strong><%=categoria%></strong></p>
+            </div>
+            <div class="row"> 
+                <div class="col-md-6 offset-md-3">
+                    <p>
+                        <a class="btn btn-light col-md-4 offset-md-2" data-toggle="collapse" href="#tabela" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Autores
+                        </a>
+                        <%if(login){%>
+                            <a class="btn btn-light col-md-4" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                Opções
+                            </a>    
+                        <%}%>
+                    </p>
+                    <div class="collapse" id="tabela">
+                        <table class="table table-borderless table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Autores</th>
+                                    <th scope="col">Data de Edição</th>
+                                    <th scope="col">Envolvimento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%autores.forEach((autor)=>{%>
+                                    <tr>
+                                        <td><%=autor.nome%> <%=autor.sobrenome%></td>
+                                        <td><%=autor.dataEdicao%></td>
+                                        <td><%=autor.relacao%></td>
+                                    </tr>
+                                <%})%>
+                            </tbody>
+                        </table>
+                    </div>
+                    <%if(login){%>
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <a class="btn btn-primary col-md-6 offset-md-3" href="/noticia/editar/<%=noticia.idnoticia%>">Editar Notícia</a>
+                                <br>
+                                <button class="btn col-md-6 offset-md-3" onclick="Denunciar()">Denunciar Notícia</button>  
+                                <br>
+                                <button class="btn col-md-6 offset-md-3" onclick="acompanhar()"><span id="acompanhar">Acompanhar</span></button>  
+                            </div>
+                    <%}%>
+                    </div>
+                </div>
+                
+            </div>
+                
+        </div>
+        <div style="padding-top:4em; ">
+            <%-include ../comentarios%>
+        </div>
+    </div>
+    <%-include form-denuncia%>
+    <%-include modal-noticia-finalizada%>
+    <%-include ../footer%>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script>
+    window.onload = function(){
+        const primeiraVez = "<%=primeiraVez%>";
+        if(primeiraVez == "true"){
+            mostrarModal();
+        }
+    }
+    function Denunciar(){
+        $('#modalDenuncia').modal('toggle');
+    }
+    function acompanhar(){
+        let acompanha;
+        if(document.getElementById("acompanhar").textContent == "Acompanhar"){
+            document.getElementById("acompanhar").textContent = "Deixar de Acompanhar";
+            acompanha = true;
+        }
+        else{
+            document.getElementById("acompanhar").textContent = "Acompanhar";
+            acompanha = false;
+        }
+        let http = new XMLHttpRequest();
+        http.onreadystatechange = function(){
+            
+        }
+        http.open("POST","/users/acompanhar/<%=noticia.idnoticia%>",false);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("acompanha="+JSON.stringify(acompanha));
+    }
+</script>
+</body>
+</html>

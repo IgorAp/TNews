@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>Avalizar Denúncia</title>
+</head>
+<body>
+    <%-include ../header%>
+    <div class="container shadow-sm p-3 mb-5 bg-light rounded" style="margin-top:6em">
+        <div class="row">
+            <div class="col-md-10 offset-md-1" >
+                <h1>Avaliar Denúncia</h1>
+                <div class="accordion" id="accordion">
+                    <div class="card" >
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Informações da Denúncia
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body">
+                                <p><strong>Categoria da Denúncia:</strong></p>
+                                <p>
+                                    <%=denuncia.flag%>
+                                </p>
+                                <p><strong>Detalhes da denúncia</strong></p>
+                                <p><%=denuncia.detalhes%></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                            <div class="card-header" id="headingTwo">
+                              <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Informações da Notícia
+                                </button>
+                              </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion ">
+                              <div class="card-body">
+                                <h4><%=noticia.titulo%></h4>
+                                <%-noticia.corpo%>
+                            </div>
+                            </div>
+                          </div>
+                    
+                </div>
+                <br>
+                <%if(votou == false){%>
+                <div class="card border-primary">
+                        <div class="card-header">Avaliar Denúncia</div>
+                        <div class="card-body text-primary" id="card-denuncia">
+                            <h5 class="card-title">Escolha uma opção:</h5>
+                            <button onclick="votar('concordo')" class="btn">Concordo com a denúncia</button>
+                            <button onclick="votar('discordo')" class="btn">Discordo da denúncia</button>
+                            <button onclick="votar('nulo')"class="btn">Não posso opinar</button>
+                        </div>
+                    </div>
+                    <%}else{%>
+                        <div class="card border-primary">
+                            <div class="card-header">Avaliar Denúncia</div>
+                            <div class="card-body text-primary" id="card-denuncia">
+                                <p>Só é possível votar uma vez!</p>
+                            </div>
+                        </div>
+                    <%}%>
+                        
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script>
+    function votar(voto){
+        let avaliacao = {
+            "voto":voto,
+            "idDenuncia":"<%=denuncia.idDenuncia%>"
+        }
+        let http = new XMLHttpRequest();
+        http.onreadystatechange = function(){
+        }
+        document.getElementById("card-denuncia").innerHTML = `
+            <p>Obrigado por participar!</p>
+        `;
+        http.open("POST","/denuncia/avaliar",true);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("avaliacao="+JSON.stringify(avaliacao));
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<div id="modalFeed" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Configurar Feed</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form action="">
+                        <label for="categoria">Categoria:</label>
+                        <select id="categoria" class="custom-select">
+                            <option selected value="">Selecionar categoria</option>
+                            <%categorias.forEach((categoria)=>{%>
+                                <option value="<%=categoria.idcategoria%>"><%=categoria.categoria%></option>
+                            <%})%>
+                        </select>
+                        <div class="form-row">
+                                <div class=" form-group col-md-6">
+                                    <p>Estado
+                                        <select onclick="insereCidade()" class="custom-select" name="estado" id="estado">
+                                            <option value="">Selecionar Estado</option>
+                                        </select>
+                                    </p>
+                                </div>              
+                                <div class="form-group col-md-6">
+                                    <p>Cidade
+                                        <select class="custom-select" name="cidade" id="cidade">
+                                            <option value="">Selecionar Cidade</option>
+                                        </select>
+                                    </p>
+                                </div> 
+                            </div>
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+              <button onclick="filtrar()" type="button" class="btn btn-secondary" data-dismiss="modal">Filtrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script src="/javascripts/index.js"></script>
+      <script>
+          var categoria = "";
+          var cidade = "";
+          var estado = "";
+          function filtrar(){
+              categoria = document.getElementById("categoria").value;
+              cidade = document.getElementById("cidade").value;
+              estado = document.getElementById("estado").value;
+              document.getElementById("feed").innerHTML = "";
+              indice = 0;
+              carregaFeed();
+          }
+          function abrirFeed(){
+            $('#modalFeed').modal('show');
+          }
+      </script>

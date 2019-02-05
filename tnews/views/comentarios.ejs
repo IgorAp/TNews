@@ -1,0 +1,171 @@
+<div class="shadow-sm p-3 mb-5 bg-white rounded">
+    <h3 class="text-center">Comentários</h3>
+    <% if(login) {%>
+        <div class="form-row">
+                <div class="form-group col-md-8 offset-md-2">
+                        <textarea id="comentario" class="form-control" type="text" placeholder="Comente aqui"></textarea>
+                    </div>
+           
+        </div>
+        <div class="form-row">
+            <button onclick="comentar()" class="btn btn-primary col-md-8 offset-md-2">Comentar</button>
+        </div> 
+    <%}else{%>
+        
+        <div class="text-center shadow-sm p-3 mb-5 bg-white rounded col-md-6 offset-md-3">
+            <p>Para comentar é necessário que você esteja logado</p>
+            <a class="btn" href="/users/login">Login</a>
+            <a class="btn" href="/users/cadastro">Criar Conta</a>
+        </div>
+    <%}%>
+    
+    <div id="comentarios" style="padding-top:2em;">
+        
+    </div>
+    <div class="form-row">
+        <button onclick="obterComentarios()" class="btn col-md-8 offset-md-2">Carregar mais comentários</button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalExemplo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Respostas</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function mostrarRespostas(idComentario){
+        obterRespostas(idComentario);
+    }
+    const idNoticia = "<%=noticia.idnoticia%>";
+    var pagina = 0;
+    var logado = "<%=login%>";
+    function comentar(id){
+        let idcomentario;
+        var comentario = {
+            "corpo":"",
+            "idNoticia":idNoticia,
+            "idcomentario":null
+        };
+        if(id){
+            idcomentario = "resposta";
+            comentario.idcomentario = id;
+        }
+        else idcomentario = "comentario";
+        comentario.corpo = document.getElementById(idcomentario).value;
+        if(comentario.corpo != ""){
+            let http = new XMLHttpRequest();
+            http.onreadystatechange = function(){
+                document.getElementById("comentarios").innerHTML = "";
+                pagina = 0;
+                obterComentarios();
+            }
+                http.open("POST","/comentario/cadastrar",false);
+                http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                http.send("comentario="+JSON.stringify(comentario));
+        }else{
+            alert("O campo com o comentário não pode ser vazio!");
+        }
+    }
+    function obterComentarios(){
+        let http = new XMLHttpRequest();
+        http.onreadystatechange = function(){
+            const dados = JSON.parse(http.responseText||"[]");
+            montarLayout(dados);
+        }
+        http.open("POST","/comentario/"+idNoticia,false);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("pagina="+pagina);
+        pagina +=3;
+    }
+    function montarLayout(comentarios){
+        let dados;
+        comentarios.forEach(comentario => {
+            if(logado == "true"){
+                dados = `
+                <div class="card col-md-8 offset-md-2" id="comentario.idcomentario">
+                        
+                    <div class="card-body" id="`+comentario.idcomentario+`">
+                    <p><strong>`+comentario.nome +" "+comentario.sobrenome+`</strong></p>
+                    <p>`+comentario.corpo+`</p>
+                    <button class="btn btn-light" onclick="responder(`+comentario.idcomentario+`)">Responder</button>
+                    <button onclick="mostrarRespostas(`+comentario.idcomentario+`)" class="btn btn-light">Visualizar Respostas</button>
+                    </div>
+                    <div id="form`+comentario.idcomentario+`"></div>
+                </div>
+                </br>
+            `;
+            }else{
+                dados = `
+                <div class="card col-md-8 offset-md-2" id="comentario.idcomentario">
+                        
+                    <div class="card-body" id="`+comentario.idcomentario+`">
+                    <p><strong>`+comentario.nome +" "+comentario.sobrenome+`</strong></p>
+                    <p>`+comentario.corpo+`</p>
+                    <button onclick="mostrarRespostas(`+comentario.idcomentario+`)" class="btn btn-light">Visualizar Respostas</button>
+                    </div>
+                    <div id="form`+comentario.idcomentario+`"></div>
+                </div>
+                </br>
+            `;
+            }
+            
+            document.getElementById("comentarios").innerHTML =  document.getElementById("comentarios").innerHTML+dados;
+            if(comentarios.length == 1){
+                document.getElementById("comentarios").innerHTML =  document.getElementById("comentarios").innerHTML+`
+                <div class="alert alert-info text-center col-md-8 offset-md-2" role="alert">
+                    Não há comentários para carregar!
+                </div>
+                `;
+            }       
+        });
+    }
+    function responder(id){
+        let dados = `
+            <div style="padding-top:1em;">
+                <textarea id="resposta" class="form-control" type="text" placeholder="Comente aqui"></textarea>
+                <br/>
+                <button onclick="comentar(`+id+`)" class="btn btn-primary col-md-3">Responder</button>
+                <button onclick="cancelarResposta(`+id+`)" class="btn btn-danger col-md-3">Cancelar</button>    
+            </div>
+        `;
+        
+        document.getElementById("form"+id).innerHTML = dados;
+    }
+    function obterRespostas(idComentario){
+        let http = new XMLHttpRequest();
+        http.onreadystatechange = function(){
+            document.getElementById("modalBody").innerHTML = "";
+            const dados = JSON.parse(http.responseText||"[]");
+            dados.forEach(resposta=>{
+                let html = `
+                    <p><strong>`+resposta.nome+`</strong><p/>
+                    <p>`+resposta.corpo+`</p>
+                `;
+                document.getElementById("modalBody").innerHTML +=html;
+            });
+            $('#modalExemplo').modal('toggle');
+        }
+        http.open("POST","/comentario/respostas/"+idNoticia,false);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("idComentario="+idComentario);
+    }
+    function cancelarResposta(id){
+        document.getElementById("form"+id).innerHTML = "";
+    }
+    obterComentarios();
+</script>

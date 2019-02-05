@@ -1,0 +1,36 @@
+<!-- views/header.ejs -->
+<nav class="navbar fixed-top navbar-expand-lg navbar-light nav-color shadow-sm">
+    <a class="navbar-brand" href="/">
+      <img src="/images/logo.png" width="100" height="" class="d-inline-block align-top" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Alterna navegação">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav mr-auto">
+        <%if(login == true) {%>
+        <!--Minha conta-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <strong>Minha Conta</strong>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="/users/perfil">Minhas Notícias</a>
+            <a class="dropdown-item" href="/users/editar">Atualizar Minhas Informações </a>
+            <a class="dropdown-item" href="/users/logout">Sair</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/noticia/cadastro"><strong>Nova Notícia</strong></a>
+        </li>
+        <%} else{%>
+        <li class="nav-item">
+          <a class="nav-link" href="/users/login"><strong>Login</strong></a>
+        </li>
+        <li class="nav-item" >
+          <a href="/users/cadastro" class="nav-link"><strong>Crie uma conta</strong></a>
+        </li>
+        <%}%>
+      </ul>
+    </div>
+  </nav>

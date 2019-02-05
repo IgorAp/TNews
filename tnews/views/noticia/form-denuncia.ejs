@@ -1,0 +1,68 @@
+<div id="modalDenuncia" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Denunciar</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="corpoModal">
+            <p> <strong>Escolha uma opção:</strong></p>
+            <select class="form-control" name="" id="flag">
+              <option value="Noticia Falsa">Notícia Falsa</option>
+              <option value="Nudez">Nudez</option>
+              <option value="Violencia">Violência</option>
+            </select>
+            <br>
+            <p><strong>Mais detalhes:</strong></p>
+            <textarea required id="detalhesDenuncia" class="form-control" placeholder="Detalhe sua denúncia..."></textarea>
+        </div>
+        <div class="modal-footer" id="footerModal">
+          <button type="button" class="btn btn-primary" onclick="realizarDenuncia()">Confirmar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      function verificarModal(){
+        let http = new XMLHttpRequest();
+        http.onreadystatechange = function(){
+          if(http.responseText == "true"){
+            populaModal("Você já denunciou essa notícia");
+          }
+        }
+        http.open("POST","/denuncia/verificar",true);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("idNoticia="+idNoticia);
+      }
+      function realizarDenuncia(){
+        let denuncia = {
+          "categoria":document.getElementById("flag").value,
+          "detalhes":document.getElementById("detalhesDenuncia").value,
+          "idNoticia":idNoticia,
+          "idUsuario":"",
+          "visualizacoes":"<%=noticia.visualizacoes%>"
+        }
+        let http = new XMLHttpRequest();
+        http.onreadystatechange = function(){
+          populaModal(http.responseText);
+        }
+        http.open("POST","/denuncia/denunciar",true);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("denuncia="+JSON.stringify(denuncia));
+      }
+      function populaModal(frase){
+        document.getElementById("corpoModal").innerHTML = `
+            <p>`+frase+`</p>
+          `;
+          document.getElementById("footerModal").innerHTML = `
+          <button type="button" class="btn btn-success" onclick="fecharModal()">Fechar</button>
+          `;
+      }
+      function fecharModal(){
+        $('#modalDenuncia').modal('hide');
+      }
+      window.onload = verificarModal();
+  </script>

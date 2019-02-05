@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote-bs4.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>Cadastro de Notícia</title>
+</head>
+<body>
+    <%-include ../header%>
+    <div class="container">
+        <%-include steps%>
+        <h1 class="text-center">Adicionando informações a sua notícia</h1>
+        <form onsubmit="" action="/noticia/<%=action%>" method="POST">
+            <div class="form-row">
+                <div class=" form-group col-md-6 offset-md-3">
+                    <p>Categoria
+                        <select class="custom-select" name="categoria" id="categoria">
+                            <%categorias.forEach((categoria)=>{%>
+                                <option value="<%=categoria.idcategoria%>"><%=categoria.categoria%></option>
+                            <%})%>
+                        </select>
+                    </p>
+                </div>       
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6 offset-md-3">
+                    <label for="data">Data que o fato noticiado ocorreu</label>
+                    <input id="data" name="data" class="form-control" type="date">
+                </div>
+                <div class=" form-group col-md-3 offset-md-3">
+                    <p>Estado
+                        <select onclick="insereCidade()" class="custom-select" name="estado" id="estado">
+                            <option value="<%=dados.estado%>"></option>
+                        </select>
+                    </p>
+                </div>              
+                <div class="form-group col-md-3">
+                    <p>Cidade
+                        <select class="custom-select" name="cidade" id="cidade">
+                            <option value="<%=dados.cidade%>"></option>
+                        </select>
+                    </p>
+                </div> 
+  
+                <div class="form-group col-md-6 offset-md-3">
+                    <input accept="image/*" name="capa" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+                    <label class="custom-file-label" for="inputGroupFile01">Escolha a imagem de capa da sua notícia</label>
+                </div>
+                <button type="submit" class="btn col-md-6 offset-md-3">Definir Categoria</button>
+        </form>
+    </div>
+    <%-include ../header%>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="/javascripts/index.js"></script>
+    <script>
+        var fileInput =  document.querySelector("#inputGroupFile01");
+        files = fileInput.addEventListener('change', event => appendFiles(event.target.files));
+        function appendFiles(files){
+            var form = new FormData();
+            form.append('fileUpload', files[0]); // para apenas 1 arquivo
+            var http = new XMLHttpRequest();
+            http.onreadystatechange = function(){
+
+                
+            }
+            http.open("POST","/noticia/uploader",false);
+            http.send(form);
+        }
+    </script>
+</body>
+</html>

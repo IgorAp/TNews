@@ -1,0 +1,23 @@
+<div id="modalNoticiaFinalizada" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Parabéns!</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="corpoModal">
+            <p>Sua notícia está pronta, você já pode visualiza-la!</p>
+        </div>
+        <div class="modal-footer" id="footerModal">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  function mostrarModal(){
+    $('#modalNoticiaFinalizada').modal('show');
+  }
+  </script>

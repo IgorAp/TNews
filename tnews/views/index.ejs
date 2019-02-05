@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>TNews</title>
+</head>
+<body>
+  <%-include('header')%>
+  <% if(login == false){%>
+    <div class="container-fluid">
+        <div class="shadow-sm" style="background-color:rgb(196, 238, 255);margin-top:6em;padding: 2em;border-radius: 0.2em;">
+            <h2>Bem vindo ao TNews</h2>
+            <p>Encontre informações relevantes e contribua escrevendo notícias</p>
+          </div>
+     </div>
+  <%}%>
+    <div class="container" style="<%if(login == true){%>margin-top:6em<%}%>">
+      <h1 class="text-center">Últimas Notícias</h1>
+      <div class="row">
+          <div class="col-md-12">
+              <button onclick="abrirFeed()" class="btn btn-outline-primary col-md-8 offset-md-2" style="margin-bottom:2em;">Filtrar</button>
+          </div>
+      </div>
+      <div id="feed" class="row">
+        <% noticias.forEach((noticia)=>{%>
+          <div class="col-md-6">
+            <div class="shadow p-3 mb-5 bg-white rounded">
+                <h5><%=noticia.titulo%></h6>
+                <a target="_blank" href="/noticia/view/<%=noticia.idnoticia%>">
+                    <img class="img-fluid" style="width: 20em" src="<%=noticia.capa%>" alt="">
+                </a>
+                <p style="margin-top:1.5em">Visualizações: <%=noticia.visualizacoes%></p>
+            </div>       
+          </div>
+        <%})%>
+      </div>
+      <div id="mensagem">
+
+      </div>
+      <button class="btn btn-light col-md-8 offset-md-2" onclick="carregaFeed()">Carregar Notícias</button>
+    </div>
+    <%-include noticia/form-avaliar %>
+    <%-include noticia/feed %>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="//unpkg.com/jscroll/dist/jquery.jscroll.min.js"></script>
+    <script>
+      var x = 0;
+      var indice = 5;
+      var podeVotar = "<%=podeVotar%>";      
+      function carregaFeed(){
+        const http = new XMLHttpRequest();
+        var dados;
+        const filtros = {
+          "categoria":categoria,
+          "cidade":cidade,
+          "estado":estado
+        }
+        http.onreadystatechange = function(){
+          dados = JSON.parse(http.responseText||"[]");
+          dados.forEach(noticia => {
+            document.getElementById("feed").innerHTML += `
+            <div class="col-md-6">
+            <div class="shadow p-3 mb-5 bg-white rounded">
+                <h5>`+noticia.titulo+`</h6>
+                <a target="_blank" href="/noticia/view/`+noticia.idnoticia+`">
+                    <img class="img-fluid" style="width: 20em" src="`+noticia.capa+`" alt="">
+                </a>
+                <p style="margin-top:1.5em">Visualizações: `+noticia.visualizacoes+`</p>
+            </div>       
+          </div>
+            `;
+          });
+          if(http.responseText == "[]"){
+            document.getElementById("mensagem").innerHTML = `
+            <div class="alert alert-info text-center col-md-8 offset-md-2" role="alert">
+              Não há notícias para carregar!
+            </div>
+            `;
+          }
+        }
+        http.open("POST","/noticia/obter/"+indice,false);
+        http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        http.send("filtros="+JSON.stringify(filtros));
+        indice+=5;
+      }
+    </script>
+  </body>
+</html>

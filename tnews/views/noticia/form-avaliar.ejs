@@ -1,0 +1,31 @@
+<div id="modalVisualizarDenuncia" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Precisamos da sua ajuda!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="corpoModal">
+                <p>Você poderia nos dar a sua opinião sobre uma notícia que foi denunciada?</p>
+            </div>
+            <div class="modal-footer" id="footerModal">
+              <button type="button" class="btn btn-primary" onclick="avaliarDenuncia()">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      window.onload = function(){
+        if(podeVotar =="true"){
+          $('#modalVisualizarDenuncia').modal('show');
+        }
+      }
+      function avaliarDenuncia(){
+        $('#modalVisualizarDenuncia').modal('hide');
+        let idNoticia = "<%=idNoticia%>";
+        window.open('/denuncia/avaliar/'+idNoticia, '_blank');
+      }
+      </script>
