@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: tnews
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: userteste
+      # You can use whatever password you like
+      MYSQL_PASSWORD: userteste
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+    command: --init-file /app/tnews.sql  
+    volumes:
+      - .:/app
+  app:
+    depends_on:
+      - db
+    build: .
+    command: node ./app/tnews/bin/www
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+
+    environment:
+      DBHOST: db
+      DBPORT: 3306
+      DBUSER: root
+      DBPASS: password
+      
+# Names our volume
+volumes:
+  my-db:

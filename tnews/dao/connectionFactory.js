@@ -1,10 +1,11 @@
 var mysql = require('mysql');
 var util = require('util');
+console.log(process.env.DBHOST)
 const connection = mysql.createConnection({
-    host:          'localhost',
-    port:          3306,
-    user:          'root',
-    password:      'root',
+    host:          process.env.DBHOST,
+    port:          process.env.DBPORT,
+    user:          process.env.DBUSER,
+    password:      process.env.DBPASS,
     database:      'tnews',
     dateStrings:    true
 });
