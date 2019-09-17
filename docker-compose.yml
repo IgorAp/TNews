@@ -6,19 +6,11 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: tnews
-      # So you don't have to use root, but you can if you like
-      MYSQL_USER: userteste
-      # You can use whatever password you like
-      MYSQL_PASSWORD: userteste
-      # Password for root access
       MYSQL_ROOT_PASSWORD: password
     ports:
-      # <Port exposed> : < MySQL Port running inside container>
       - '3306:3306'
     expose:
-      # Opens port 3306 on the container
       - '3306'
-      # Where our data will be persisted
     command: --init-file /app/tnews.sql  
     volumes:
       - .:/app
